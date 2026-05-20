@@ -1,39 +1,28 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton
-from database.db_connection import init_database
-
-class AnotherWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Page2")
-        self.setMinimumSize(1200, 800)
-        self.setStyleSheet("background-color: red;")
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from frontend.ui.startscreen import Startscreen
+from frontend.ui.workoutscreen import Workoutscreen
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.stacked_widget = QStackedWidget()
+        self.setCentralWidget(self.stacked_widget)
         self.setWindowTitle("Momentum")
-        self.setMinimumSize(1200, 800)
-        self.setStyleSheet("background-color: rgb(32, 35, 52);")
-
-        self.secondwindow = AnotherWindow()
-
-        central = QWidget()
-        layout = QVBoxLayout(central)
-
-        self.button = QPushButton("Start")
-        self.button.clicked.connect(self.show_new_window)
-
-        layout.addWidget(self.button)
-        self.setCentralWidget(central)
-
-    def show_new_window(self, _):
-        self.secondwindow.show()
+        
+        self.start_screen = Startscreen()
+        self.workout_screen = Workoutscreen()
+        
+        self.stacked_widget.addWidget(self.start_screen)
+        self.stacked_widget.addWidget(self.workout_screen)
+        
+        # Connect button clicks
+        self.start_screen.button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.workout_screen))
+        self.workout_screen.button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.start_screen))
 
 if __name__ == "__main__":
-    init_database()
-
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.move(100, 100)   
     window.show()
-    sys.exit(app.exec())
+    app.exec()
