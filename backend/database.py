@@ -1,9 +1,28 @@
+"""
+Database module for the Momentum application.
+
+This module handles all SQLite database operations including connection
+management and table creation for workouts, exercises, and sets.
+"""
+
 import os
 import sqlite3
 
 os.makedirs("backend/data", exist_ok=True)
 
+
 def connect_db(db_name):
+    """
+    Establish a connection to the SQLite database.
+
+    Creates the database file if it doesn't exist. The file is stored in
+    the backend/data/ directory.
+
+    :param db_name: Name of the database (without .db extension)
+    :type db_name: str
+    :return: SQLite connection object or None if error occurs
+    :rtype: sqlite3.Connection or None
+    """
     try:
         sqliteConnection = sqlite3.connect(f'backend/data/{db_name}.db')
         print('DB initialised')
@@ -13,7 +32,17 @@ def connect_db(db_name):
         print('Error occured =', error)
         return None
 
+
 def create_routines_table(connection):
+    """
+    Create the routines table if it doesn't exist.
+
+    The routines table stores workout sessions. Each row represents one
+    workout session with a date and optional notes.
+
+    :param connection: Active SQLite database connection
+    :type connection: sqlite3.Connection
+    """
     cursor = connection.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS routines (
@@ -24,7 +53,17 @@ def create_routines_table(connection):
     ''')
     connection.commit()
 
+
 def create_exercises_table(connection):
+    """
+    Create the exercises table if it doesn't exist.
+
+    The exercises table stores unique exercise names (e.g., "RDL", "Squat").
+    Each name can only appear once.
+
+    :param connection: Active SQLite database connection
+    :type connection: sqlite3.Connection
+    """
     cursor = connection.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS exercises (
@@ -36,6 +75,16 @@ def create_exercises_table(connection):
 
 
 def create_sets_table(connection):
+    """
+    Create the sets table if it doesn't exist.
+
+    The sets table stores individual sets performed during a workout routine.
+    Each set belongs to one routine and one exercise. Foreign keys link back
+    to the routines and exercises tables.
+
+    :param connection: Active SQLite database connection
+    :type connection: sqlite3.Connection
+    """
     cursor = connection.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS sets (
@@ -53,6 +102,8 @@ def create_sets_table(connection):
 ''')
     connection.commit()
 
+
+# Create database tables when this script is run directly
 connection = connect_db("workout")
 create_routines_table(connection)
 create_exercises_table(connection)
