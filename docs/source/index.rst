@@ -19,4 +19,3 @@ documentation for details.
    backend
    frontend
    main
-   modules
