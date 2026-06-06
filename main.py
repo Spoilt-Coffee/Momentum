@@ -1,48 +1,29 @@
-"""
-Main application module for Momentum.
-
-This module initializes the PyQt6 application, creates the main window,
-and manages screen switching between the start screen and workout screen.
-"""
-
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
-from frontend.ui.startscreen import Startscreen
-from frontend.ui.workoutscreen import Workoutscreen
-
+from frontend.ui.dashboard import Dashboard
+from frontend.ui.fitness import Fitness
 
 class MainWindow(QMainWindow):
-    """
-    Main application window that manages screen navigation.
-
-    Uses a QStackedWidget to switch between different screens (dashboard,
-    workout tracker, etc.).
-
-    :param parent: Parent widget, defaults to None
-    :type parent: QWidget, optional
-    """
-
     def __init__(self):
-        """Initialize the main window and set up screens."""
         super().__init__()
+        self.setFixedSize(1025, 901)
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
         self.setWindowTitle("Momentum")
 
-        self.start_screen = Startscreen()
-        self.workout_screen = Workoutscreen()
+        self.dashboard = Dashboard()
+        self.fitness = Fitness()
 
-        self.stacked_widget.addWidget(self.start_screen)
-        self.stacked_widget.addWidget(self.workout_screen)
+        self.stacked_widget.addWidget(self.dashboard)
+        self.stacked_widget.addWidget(self.fitness)
 
         # Connect button clicks to switch screens
-        self.start_screen.button.clicked.connect(
-            lambda: self.stacked_widget.setCurrentWidget(self.workout_screen)
+        self.fitness.button.clicked.connect(
+            lambda: self.stacked_widget.setCurrentWidget(self.dashboard)
         )
-        self.workout_screen.button.clicked.connect(
-            lambda: self.stacked_widget.setCurrentWidget(self.start_screen)
+        self.dashboard.button.clicked.connect(
+            lambda: self.stacked_widget.setCurrentWidget(self.fitness)
         )
-
 
 if __name__ == "__main__":
     """Entry point for the application."""
