@@ -24,6 +24,9 @@ class MainWindow(QMainWindow):
     :vartype sidebar_widget: Sidebar
     :ivar content_widget: Stacked widget that holds the individual page panels.
     :vartype content_widget: QStackedWidget
+    :ivar nav_buttons: Ordered list of sidebar navigation buttons, used by
+        :meth:`switch_screen` to reset active states on each navigation event.
+    :vartype nav_buttons: list[QPushButton]
     :ivar dashboard: The dashboard page panel.
     :vartype dashboard: Dashboard
     :ivar fitness: The fitness page panel.
@@ -44,7 +47,7 @@ class MainWindow(QMainWindow):
         layout.setSpacing(0)
 
         self.sidebar_widget = Sidebar()
-        # Puts all the buttons into a list to cycle through in update_button_colours()
+        # This is a list of buttons for switch_screens()
         self.nav_buttons = [
             self.sidebar_widget.dashboard_button,
             self.sidebar_widget.fitness_button
@@ -75,6 +78,18 @@ class MainWindow(QMainWindow):
         )
 
     def switch_screen(self, target_screen, clicked_button):
+        """Switch the visible content panel and update the active button state.
+
+        Sets ``target_screen`` as the current widget in the content stack,
+        clears the ``active`` property from all navigation buttons, then marks
+        ``clicked_button`` as active and forces a style repaint so QSS
+        pseudo-state rules are applied immediately.
+
+        :param target_screen: The panel widget to display in the content area.
+        :type target_screen: Panel
+        :param clicked_button: The sidebar button that triggered the navigation.
+        :type clicked_button: QPushButton
+        """
         self.content_widget.setCurrentWidget(target_screen)
         for button in self.nav_buttons:
             button.setProperty("active", False)

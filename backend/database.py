@@ -1,8 +1,14 @@
 """
-Database module for the Momentum application.
+backend.database
+================
 
-This module handles all SQLite database operations including connection
-management and table creation for workouts, exercises, and sets.
+Handles all SQLite database operations for the Momentum application,
+including connection management and table creation for workouts,
+exercises, and sets.
+
+.. note::
+    Importing this module creates the ``workout.db`` database file and
+    initialises all required tables immediately as a module-level side effect.
 """
 
 import os
