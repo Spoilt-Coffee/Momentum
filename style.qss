@@ -1,0 +1,18 @@
+#sidebar_widget {
+    background-color: rgb(40, 41, 64);
+}
+
+#content_widget {
+    background-color: rgb(30, 30, 51);
+}
+
+QPushButton[active="true"] {
+    background-color: rgb(54, 102, 243);
+    border-radius: 3px;
+}
+
+QPushButton[active="false"] {
+    background-color: rgb(47, 48, 77);
+    border-radius: 3px;
+}
+

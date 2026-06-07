@@ -1,52 +1,116 @@
 """
-Main application module for Momentum.
+main
+====
 
-This module initializes the PyQt6 application, creates the main window,
-and manages screen switching between the start screen and workout screen.
+Application entry point. Constructs the :class:`MainWindow` and starts
+the PyQt6 event loop.
 """
 
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
-from frontend.ui.startscreen import Startscreen
-from frontend.ui.workoutscreen import Workoutscreen
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QHBoxLayout
+from frontend.ui.dashboard import Dashboard
+from frontend.ui.fitness import Fitness
+from frontend.ui.sidebar import Sidebar
 
 
 class MainWindow(QMainWindow):
-    """
-    Main application window that manages screen navigation.
+    """Top-level application window.
 
-    Uses a QStackedWidget to switch between different screens (dashboard,
-    workout tracker, etc.).
+    Arranges the :class:`~frontend.ui.sidebar.Sidebar` and a
+    :class:`~PyQt6.QtWidgets.QStackedWidget` content area side by side
+    inside a central widget.
 
-    :param parent: Parent widget, defaults to None
-    :type parent: QWidget, optional
+    :ivar sidebar_widget: The navigation sidebar.
+    :vartype sidebar_widget: Sidebar
+    :ivar content_widget: Stacked widget that holds the individual page panels.
+    :vartype content_widget: QStackedWidget
+    :ivar nav_buttons: Ordered list of sidebar navigation buttons, used by
+        :meth:`switch_screen` to reset active states on each navigation event.
+    :vartype nav_buttons: list[QPushButton]
+    :ivar dashboard: The dashboard page panel.
+    :vartype dashboard: Dashboard
+    :ivar fitness: The fitness page panel.
+    :vartype fitness: Fitness
     """
 
     def __init__(self):
-        """Initialize the main window and set up screens."""
+        """Initialise the main window, create and arrange child widgets."""
         super().__init__()
-        self.stacked_widget = QStackedWidget()
-        self.setCentralWidget(self.stacked_widget)
+        self.setFixedSize(1025, 901)
         self.setWindowTitle("Momentum")
 
-        self.start_screen = Startscreen()
-        self.workout_screen = Workoutscreen()
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-        self.stacked_widget.addWidget(self.start_screen)
-        self.stacked_widget.addWidget(self.workout_screen)
+        layout = QHBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        # Connect button clicks to switch screens
-        self.start_screen.button.clicked.connect(
-            lambda: self.stacked_widget.setCurrentWidget(self.workout_screen)
+        self.sidebar_widget = Sidebar()
+        # This is a list of buttons for switch_screens()
+        self.nav_buttons = [
+            self.sidebar_widget.dashboard_button,
+            self.sidebar_widget.fitness_button
+        ]
+
+        self.content_widget = QStackedWidget()
+
+        self.sidebar_widget.setObjectName("sidebar_widget")
+        self.content_widget.setObjectName("content_widget")
+
+        layout.addWidget(self.sidebar_widget)
+        layout.addWidget(self.content_widget)
+        layout.setStretchFactor(self.sidebar_widget, 1)
+        layout.setStretchFactor(self.content_widget, 4)
+
+        self.dashboard = Dashboard()
+        self.fitness = Fitness()
+
+        self.content_widget.addWidget(self.dashboard)
+        self.content_widget.addWidget(self.fitness)
+
+        # Connect sidebar buttons to switch screens
+        self.sidebar_widget.dashboard_button.clicked.connect(
+            lambda: self.switch_screen(self.dashboard, self.sidebar_widget.dashboard_button)
         )
-        self.workout_screen.button.clicked.connect(
-            lambda: self.stacked_widget.setCurrentWidget(self.start_screen)
+        self.sidebar_widget.fitness_button.clicked.connect(
+            lambda: self.switch_screen(self.fitness, self.sidebar_widget.fitness_button)  
         )
 
+    def switch_screen(self, target_screen, clicked_button):
+        """Switch the visible content panel and update the active button state.
+
+        Sets ``target_screen`` as the current widget in the content stack,
+        clears the ``active`` property from all navigation buttons, then marks
+        ``clicked_button`` as active and forces a style repaint so QSS
+        pseudo-state rules are applied immediately.
+
+        :param target_screen: The panel widget to display in the content area.
+        :type target_screen: Panel
+        :param clicked_button: The sidebar button that triggered the navigation.
+        :type clicked_button: QPushButton
+        """
+        self.content_widget.setCurrentWidget(target_screen)
+        for button in self.nav_buttons:
+            button.setProperty("active", False)
+            button.style().unpolish(button)
+            button.style().polish(button)
+        clicked_button.setProperty("active", True)
+        clicked_button.style().unpolish(clicked_button)
+        clicked_button.style().polish(clicked_button)
+
+def load_stylesheet(app):
+    """Load and apply the QSS stylesheet to the application.
+
+    :param app: The running QApplication instance.
+    :type app: QApplication
+    """
+    with open("style.qss", "r") as file:
+        app.setStyleSheet(file.read())
 
 if __name__ == "__main__":
-    """Entry point for the application."""
     app = QApplication(sys.argv)
+    load_stylesheet(app)
     window = MainWindow()
     window.move(100, 100)
     window.show()
