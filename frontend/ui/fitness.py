@@ -19,3 +19,7 @@ class Fitness(Panel):
     def __init__(self):
         """Initialise the fitness panel."""
         super().__init__()
+        
+        layout = QVBoxLayout(self)
+        self.temp_button = QPushButton("TEST! THIS IS FITNESS", self)
+        layout.addWidget(self.temp_button)

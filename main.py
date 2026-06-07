@@ -44,6 +44,12 @@ class MainWindow(QMainWindow):
         layout.setSpacing(0)
 
         self.sidebar_widget = Sidebar()
+        # Puts all the buttons into a list to cycle through in update_button_colours()
+        self.nav_buttons = [
+            self.sidebar_widget.dashboard_button,
+            self.sidebar_widget.fitness_button
+        ]
+
         self.content_widget = QStackedWidget()
 
         self.sidebar_widget.setObjectName("sidebar_widget")
@@ -60,6 +66,23 @@ class MainWindow(QMainWindow):
         self.content_widget.addWidget(self.dashboard)
         self.content_widget.addWidget(self.fitness)
 
+        # Connect sidebar buttons to switch screens
+        self.sidebar_widget.dashboard_button.clicked.connect(
+            lambda: self.switch_screen(self.dashboard, self.sidebar_widget.dashboard_button)
+        )
+        self.sidebar_widget.fitness_button.clicked.connect(
+            lambda: self.switch_screen(self.fitness, self.sidebar_widget.fitness_button)  
+        )
+
+    def switch_screen(self, target_screen, clicked_button):
+        self.content_widget.setCurrentWidget(target_screen)
+        for button in self.nav_buttons:
+            button.setProperty("active", False)
+            button.style().unpolish(button)
+            button.style().polish(button)
+        clicked_button.setProperty("active", True)
+        clicked_button.style().unpolish(clicked_button)
+        clicked_button.style().polish(clicked_button)
 
 def load_stylesheet(app):
     """Load and apply the QSS stylesheet to the application.
@@ -69,7 +92,6 @@ def load_stylesheet(app):
     """
     with open("style.qss", "r") as file:
         app.setStyleSheet(file.read())
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

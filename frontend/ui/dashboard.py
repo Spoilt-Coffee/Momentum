@@ -19,3 +19,7 @@ class Dashboard(Panel):
     def __init__(self):
         """Initialise the dashboard panel."""
         super().__init__()
+
+        layout = QVBoxLayout(self)
+        self.temp_button = QPushButton("TEST! THIS IS DASHBOARD", self)
+        layout.addWidget(self.temp_button)
