@@ -1,21 +1,51 @@
+"""
+main
+====
+
+Application entry point. Constructs the :class:`MainWindow` and starts
+the PyQt6 event loop.
+"""
+
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QStackedWidget, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QHBoxLayout
 from frontend.ui.dashboard import Dashboard
 from frontend.ui.fitness import Fitness
+from frontend.ui.sidebar import Sidebar
 
-class MainWindow(QWidget):
+
+class MainWindow(QMainWindow):
+    """Top-level application window.
+
+    Arranges the :class:`~frontend.ui.sidebar.Sidebar` and a
+    :class:`~PyQt6.QtWidgets.QStackedWidget` content area side by side
+    inside a central widget.
+
+    :ivar sidebar_widget: The navigation sidebar.
+    :vartype sidebar_widget: Sidebar
+    :ivar content_widget: Stacked widget that holds the individual page panels.
+    :vartype content_widget: QStackedWidget
+    :ivar dashboard: The dashboard page panel.
+    :vartype dashboard: Dashboard
+    :ivar fitness: The fitness page panel.
+    :vartype fitness: Fitness
+    """
+
     def __init__(self):
+        """Initialise the main window, create and arrange child widgets."""
         super().__init__()
         self.setFixedSize(1025, 901)
+        self.setWindowTitle("Momentum")
 
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)  # Remove outer margins
-        layout.setSpacing(0)  # Remove space between widgets
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-        # Create sidebar and main content widgets
-        self.sidebar_widget = QWidget()
+        layout = QHBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self.sidebar_widget = Sidebar()
         self.content_widget = QStackedWidget()
-        
+
         self.sidebar_widget.setObjectName("sidebar_widget")
         self.content_widget.setObjectName("content_widget")
 
@@ -23,8 +53,6 @@ class MainWindow(QWidget):
         layout.addWidget(self.content_widget)
         layout.setStretchFactor(self.sidebar_widget, 1)
         layout.setStretchFactor(self.content_widget, 4)
-        
-        self.setWindowTitle("Momentum")
 
         self.dashboard = Dashboard()
         self.fitness = Fitness()
@@ -32,26 +60,18 @@ class MainWindow(QWidget):
         self.content_widget.addWidget(self.dashboard)
         self.content_widget.addWidget(self.fitness)
 
-        self.dashboard_button = QPushButton("dashboard", self)
-        self.fitness_button = QPushButton("Fitness", self)
-
-        self.dashboard_button.setObjectName("sidebar_button")
-        self.fitness_button.setObjectName("sidebar_button")
-
-        self.dashboard_button.setMinimumSize(50,30)
-        self.fitness_button.setMinimumSize(50,30)
-
-        sidebar_layout = QVBoxLayout(self.sidebar_widget)
-        sidebar_layout.addWidget(self.dashboard_button)
-        sidebar_layout.addWidget(self.fitness_button)
-
 
 def load_stylesheet(app):
+    """Load and apply the QSS stylesheet to the application.
+
+    :param app: The running QApplication instance.
+    :type app: QApplication
+    """
     with open("style.qss", "r") as file:
         app.setStyleSheet(file.read())
 
+
 if __name__ == "__main__":
-    """Entry point for the application."""
     app = QApplication(sys.argv)
     load_stylesheet(app)
     window = MainWindow()
