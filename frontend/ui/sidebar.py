@@ -25,7 +25,9 @@ class Sidebar(Panel):
         """Initialise the sidebar and create navigation buttons."""
         super().__init__()
 
-        layout = QVBoxLayout(self)
+        nav_button_layout = QVBoxLayout(self)
+        nav_button_layout.setSpacing(20)
+        nav_button_layout.addSpacing(20)
 
         self.dashboard_button = QPushButton("dashboard", self)
         self.fitness_button = QPushButton("Fitness", self)
@@ -36,5 +38,6 @@ class Sidebar(Panel):
         self.dashboard_button.setMinimumSize(50, 30)
         self.fitness_button.setMinimumSize(50, 30)
 
-        layout.addWidget(self.dashboard_button)
-        layout.addWidget(self.fitness_button)
+        nav_button_layout.addWidget(self.dashboard_button)
+        nav_button_layout.addWidget(self.fitness_button)
+        nav_button_layout.addStretch()
