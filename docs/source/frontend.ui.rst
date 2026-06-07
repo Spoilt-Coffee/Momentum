@@ -4,18 +4,34 @@ frontend.ui package
 Submodules
 ----------
 
-frontend.ui.startscreen module
-------------------------------
+frontend.ui.base module
+-----------------------
 
-.. automodule:: frontend.ui.startscreen
+.. automodule:: frontend.ui.base
    :members:
    :show-inheritance:
    :undoc-members:
 
-frontend.ui.workoutscreen module
---------------------------------
+frontend.ui.dashboard module
+----------------------------
 
-.. automodule:: frontend.ui.workoutscreen
+.. automodule:: frontend.ui.dashboard
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+frontend.ui.fitness module
+--------------------------
+
+.. automodule:: frontend.ui.fitness
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+frontend.ui.sidebar module
+--------------------------
+
+.. automodule:: frontend.ui.sidebar
    :members:
    :show-inheritance:
    :undoc-members:
